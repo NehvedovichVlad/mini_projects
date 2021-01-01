@@ -14,14 +14,18 @@ IMAGES = {}
 """ 
 Загружаем наши картинки фигур. Загрузка будет происходить только один раз в Main
 """
+
+
 def loadImages():
     pieces = ["wp", "wR", "wN", "wB", "wQ", "wK", "bp", "bR", "bN", "bB", "bQ", "bK"]
     for piece in pieces:
         IMAGES[piece] = p.transform.scale(p.image.load("images/" + piece + ".png"), (SQ_SIZE, SQ_SIZE))
 
+
 """
 Это основной драйвер для нашего кода и он будет обрабатывать ввод пользователя и обновлять графику 
 """
+
 
 def main():
     p.init()
@@ -35,8 +39,32 @@ def main():
         for e in p.event.get():
             if e.type == p.QUIT:
                 running = False
+        DrawGameState(screen, gs)
         clock.tick(MAX_FPS)
-        p.display.flip() # обновляет только часть дисплэя
+        p.display.flip()  # обновляет только часть дисплэя
+
+
+''' Отвечает за всю графику в текущей игре. '''
+def DrawGameState(screen, gs):
+    drawBoard(screen)  # рисует карту
+    drawPieces(screen, gs.board)  # рисует фигуры
+
+
+def drawBoard(screen):
+    colors = [p.Color("light gray"), p.Color("dark green")]
+    for r in range(DIMENSIONS):
+        for c in range(DIMENSIONS):
+            color = colors[((r+c) % 2)]
+            p.draw.rect(screen, color, p.Rect(c*SQ_SIZE, r*SQ_SIZE, SQ_SIZE, SQ_SIZE))
+
+''' Верхний левый квадрат будет всегда белый. '''
+def drawPieces(screen, board):
+    for r in range(DIMENSIONS):
+        for c in range(DIMENSIONS):
+            piece = board[r][c]
+            if piece != "--":
+                screen.blit(IMAGES[piece], p.Rect(c*SQ_SIZE, r*SQ_SIZE, SQ_SIZE, SQ_SIZE))
+
 
 if __name__ == "__main__":
     main()
