@@ -35,17 +35,36 @@ def main():
     gs = ChessEngine.GameState()
     loadImages()
     running = True
+    sqSelected = () # квадрат не выбран, трек хранит последний клик пользователя (tuple:(row, cow))
+    playerClicks = [] # хранит трэк последних кликов пользователя (two tuples [(6,4), (4,4)])
     while running:
         for e in p.event.get():
             if e.type == p.QUIT:
                 running = False
-        DrawGameState(screen, gs)
+            elif e.type == p.MOUSEBUTTONDOWN:
+                location = p.mouse.get_pos() # (x,y) позиция мыши
+                col = location[0]//SQ_SIZE
+                row = location[1]//SQ_SIZE
+                if sqSelected == (row, col): # игрок нажимает на квадрат дважды
+                    sqSelected = ()
+                    playerClicks = []
+                else:
+                    sqSelected = (row, col)
+                    playerClicks.append(sqSelected) # добавлен первый и второй клик
+                if len(playerClicks) == 2: # после второго нажатия
+                    move = ChessEngine.Move(playerClicks[0], playerClicks[1], gs.board)
+                    print(move.getChessNotation())
+                    gs.makeMove(move)
+                    sqSelected = () # сбрасываем количество кликов
+                    playerClicks = []
+
+        drawGameState(screen, gs)
         clock.tick(MAX_FPS)
         p.display.flip()  # обновляет только часть дисплэя
 
 
 ''' Отвечает за всю графику в текущей игре. '''
-def DrawGameState(screen, gs):
+def drawGameState(screen, gs):
     drawBoard(screen)  # рисует карту
     drawPieces(screen, gs.board)  # рисует фигуры
 
