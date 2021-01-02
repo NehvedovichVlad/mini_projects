@@ -31,6 +31,13 @@ class GameState():
         self.moveLog.append(move)
         self.whiteToMove = not self.whiteToMove # меняем местами
 
+    # отмена хода
+    def undoMove(self):
+        if len(self.moveLog) != 0:
+            move = self.moveLog.pop()
+            self.board[move.startRow][move.startCol] = move.pieceMoved
+            self.board[move.EndRow][move.endCol] = move.pieceCaptured
+            self.whiteToMove = not self.whiteToMove
 
 class Move():
     # maps keys to values
