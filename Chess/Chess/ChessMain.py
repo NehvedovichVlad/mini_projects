@@ -33,6 +33,8 @@ def main():
     clock = p.time.Clock()
     screen.fill(p.Color("white"))
     gs = ChessEngine.GameState()
+    validMoves = gs.getValidMoves()
+    moveMade = False # flag того что игрок сделал ход
     loadImages()
     running = True
     sqSelected = () # квадрат не выбран, трек хранит последний клик пользователя (tuple:(row, cow))
@@ -55,13 +57,20 @@ def main():
                 if len(playerClicks) == 2: # после второго нажатия
                     move = ChessEngine.Move(playerClicks[0], playerClicks[1], gs.board)
                     print(move.getChessNotation())
-                    gs.makeMove(move)
+                    if move in validMoves:
+                        gs.makeMove(move)
+                        moveMade = True
                     sqSelected = () # сбрасываем количество кликов
                     playerClicks = []
-            # key handler
+            # key handlers
             elif e.type == p.KEYDOWN:
                 if e.key == p.K_z: # оменит когда нажмет Z
                     gs.undoMove()
+                    moveMade = True
+
+        if moveMade:
+            validMoves = gs.getValidMoves()
+            moveMade = False
 
         drawGameState(screen, gs)
         clock.tick(MAX_FPS)
